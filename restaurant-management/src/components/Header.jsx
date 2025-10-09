@@ -13,6 +13,9 @@ const Header = () => {
 
           {/* Navigation Menu */}
           <nav className="nav-menu">
+            <a href="#home" className="nav-link">
+              Trang chủ
+            </a>
             <a href="#menu" className="nav-link">
               Menu
             </a>
