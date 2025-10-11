@@ -140,3 +140,184 @@
   font-weight: 600;
   color: #7c3aed;
 }
+
+/* Button Component Styles - Không sử dụng Tailwind */
+
+/* Styles cơ bản cho tất cả button */
+.btn {
+  padding: 12px 24px;
+  color: white;
+  font-weight: 500;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  transform: scale(1);
+  outline: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: inherit;
+}
+
+/* Hiệu ứng hover chung */
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Hiệu ứng focus cho accessibility */
+.btn:focus {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+/* Button chính - màu tím gradient */
+.btn-primary {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+}
+
+/* Button phụ - màu xám */
+.btn-secondary {
+  background-color: #6b7280;
+}
+
+.btn-secondary:hover {
+  background-color: #4b5563;
+}
+
+/* Button xem menu đặc biệt */
+.btn-menu {
+  background-color: #4338ca;
+  padding: 16px 32px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(67, 56, 202, 0.3);
+  margin-top: 20px;
+}
+
+.btn-menu:hover {
+  background-color: #3730a3;
+  box-shadow: 0 8px 24px rgba(67, 56, 202, 0.4);
+}
+
+/* Hiệu ứng active (khi click) */
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+  .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .btn-menu {
+    padding: 14px 28px;
+    font-size: 16px;
+  }
+}
+
+/* Button disabled state */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* MenuCard Component Styles */
+
+/* Menu Grid Layout */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+/* Menu Item Card */
+.menu-item {
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.menu-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Menu Image */
+.menu-image {
+  height: 200px;
+  overflow: hidden;
+}
+
+.menu-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  background-position: center;
+}
+
+.menu-item:hover .menu-image img {
+  transform: scale(1.05);
+}
+
+/* Menu Info */
+.menu-info {
+  padding: 1.5rem;
+}
+
+.menu-info h3 {
+  font-size: 1.3rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.menu-info p {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+/* Price and Action */
+.price-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.price {
+  font-size: 1.2rem;
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.add-to-cart-btn {
+  padding: 8px 16px !important;
+  font-size: 14px !important;
+  border-radius: 6px !important;
+}
+
+/* Responsive cho MenuCard */
+@media (max-width: 768px) {
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+}

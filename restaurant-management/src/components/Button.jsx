@@ -1,9 +1,8 @@
-export default function Button({ children, onClick }) {
+import "./Components.css";
+
+export default function Button({ children, onClick, variant = "primary" }) {
   return (
-    <button
-      onClick={onClick}
-      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
-    >
+    <button onClick={onClick} className={`btn btn-${variant}`}>
       {children}
     </button>
   );

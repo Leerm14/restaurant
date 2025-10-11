@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Components.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 const Header = () => {
@@ -13,21 +14,21 @@ const Header = () => {
 
           {/* Navigation Menu */}
           <nav className="nav-menu">
-            <a href="#home" className="nav-link">
+            <Link to="/" className="nav-link">
               Trang chủ
-            </a>
-            <a href="#menu" className="nav-link">
+            </Link>
+            <Link to="/menu" className="nav-link">
               Menu
-            </a>
-            <a href="#reservation" className="nav-link">
+            </Link>
+            <Link to="/reservation" className="nav-link">
               Đặt bàn
-            </a>
-            <a href="#orders" className="nav-link">
+            </Link>
+            <Link to="/orders" className="nav-link">
               Lịch sử đơn hàng
-            </a>
-            <a href="#info" className="nav-link">
+            </Link>
+            <Link to="/profile" className="nav-link">
               Thông tin cá nhân
-            </a>
+            </Link>
           </nav>
 
           {/* Account Button */}
