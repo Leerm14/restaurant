@@ -20,7 +20,7 @@ const Header = () => {
             <Link to="/menu" className="nav-link">
               Menu
             </Link>
-            <Link to="/reservation" className="nav-link">
+            <Link to="/booking" className="nav-link">
               Đặt bàn
             </Link>
             <Link to="/orders" className="nav-link">

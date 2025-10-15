@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./Menu.css";
 import MenuCard from "../../components/MenuCard";
 import MenuCardHighlight from "../../components/MenuCardHighlight";
@@ -29,6 +30,17 @@ const Menu = () => {
     alert(`Đã thêm ${item.title} vào giỏ hàng!`);
   };
 
+  // Xử lý scroll đến full menu section
+  const scrollToFullMenu = () => {
+    const fullMenuSection = document.getElementById("full-menu-section");
+    if (fullMenuSection) {
+      fullMenuSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   // Categories cho filter
   const categories = [
     { id: "all", name: "Tất cả" },
@@ -51,7 +63,9 @@ const Menu = () => {
                 Chào mừng đến với nhà hàng của chúng tôi - nơi mỗi món ăn là một
                 câu chuyện
               </p>
-              <Button variant="menu">Xem Menu</Button>
+              <Button variant="menu" onClick={scrollToFullMenu}>
+                Xem Menu
+              </Button>
             </div>
 
             {/* Featured dishes circles */}
@@ -90,7 +104,7 @@ const Menu = () => {
       </section>
 
       {/* Full Menu Section */}
-      <section className="full-menu-section">
+      <section id="full-menu-section" className="full-menu-section">
         <div className="container">
           <h2 className="section-title">Toàn Bộ Menu</h2>
 
@@ -135,7 +149,9 @@ const Menu = () => {
               Hãy đến với chúng tôi để thưởng thức những hương vị tuyệt vời
               nhất!
             </p>
-            <Button variant="menu">Đặt bàn ngay</Button>
+            <Link to="/booking">
+              <Button variant="menu">Đặt bàn ngay</Button>
+            </Link>
           </div>
         </div>
       </section>

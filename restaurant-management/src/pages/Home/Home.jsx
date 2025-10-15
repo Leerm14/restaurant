@@ -3,15 +3,11 @@ import "./Home.css";
 import Button from "../../components/Button";
 import MenuCardHighlight from "../../components/MenuCardHighlight";
 import { getFeaturedMenu } from "../../services/mockData";
-
+import { Link } from "react-router-dom";
 const Home = () => {
-  // Lấy dữ liệu menu nổi bật từ mockData
   const featuredMenu = getFeaturedMenu();
-
-  // Xử lý thêm món ăn vào giỏ hàng
   const handleAddToCart = (item) => {
     console.log("Đã thêm vào giỏ hàng:", item);
-    // TODO: Implement cart functionality
     alert(`Đã thêm ${item.title} vào giỏ hàng!`);
   };
   return (
@@ -23,7 +19,9 @@ const Home = () => {
             <h1 className="hero-title">Nhà hàng Hương Vị</h1>
             <p className="hero-subtitle">Hương vị đặc biệt từ từng món ăn</p>
             <Button variant="menu" className="pt-4">
-              khám phá menu
+              <Link to="/menu" className="nav-link">
+                Khám phá menu
+              </Link>
             </Button>
           </div>
         </div>

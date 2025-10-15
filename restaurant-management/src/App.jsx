@@ -4,6 +4,7 @@ import AdminPage from "./pages/AdminPage";
 import StaffPage from "./pages/StaffPage";
 import Home from "./pages/Home/Home";
 import Menu from "./pages/Menu/Menu";
+import Booking from "./pages/Booking/Booking";
 function App() {
   return (
     <BrowserRouter>
@@ -14,6 +15,7 @@ function App() {
           <Route path="/staff" element={<StaffPage />} />
           <Route path="/home" element={<Home />} />
           <Route path="/menu" element={<Menu />} />
+          <Route path="/booking" element={<Booking />} />
         </Routes>
       </MainLayout>
     </BrowserRouter>
