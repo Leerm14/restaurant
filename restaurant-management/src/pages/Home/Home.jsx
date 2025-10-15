@@ -1,7 +1,7 @@
 import React from "react";
 import "./Home.css";
 import Button from "../../components/Button";
-import MenuCard from "../../components/MenuCard";
+import MenuCardHighlight from "../../components/MenuCardHighlight";
 import { getFeaturedMenu } from "../../services/mockData";
 
 const Home = () => {
@@ -70,9 +70,9 @@ const Home = () => {
       <section className="menu-preview">
         <div className="container">
           <h2 className="section-title">Thực Đơn Nổi Bật</h2>
-          <div className="menu-grid">
+          <div className="menu-grid-highlight">
             {featuredMenu.map((menuItem) => (
-              <MenuCard
+              <MenuCardHighlight
                 key={menuItem.id}
                 image={menuItem.image}
                 title={menuItem.name}
