@@ -8,14 +8,13 @@ import Home from "./pages/Home/Home.tsx";
 import Menu from "./pages/Menu/Menu.tsx";
 import Booking from "./pages/Booking/Booking.tsx";
 import SignIn from "./pages/Auth/SignIn.tsx";
+import OrderHistory from "./pages/OrderHistory/OrderHistory.tsx";
 
 function App(): React.ReactElement {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
-
-        {/* Auth Routes */}
         <Route
           path="/signin"
           element={
@@ -31,11 +30,10 @@ function App(): React.ReactElement {
           element={
             <MainLayout>
               <Routes>
-                <Route path="/admin" element={<AdminPage />} />
-                <Route path="/staff" element={<StaffPage />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/menu" element={<Menu />} />
                 <Route path="/booking" element={<Booking />} />
+                <Route path="/order-history" element={<OrderHistory />} />
               </Routes>
             </MainLayout>
           }

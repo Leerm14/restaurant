@@ -24,7 +24,7 @@ const Header: React.FC = () => {
             <Link to="/booking" className="nav-link">
               Đặt bàn
             </Link>
-            <Link to="/orders" className="nav-link">
+            <Link to="/order-history" className="nav-link">
               Lịch sử đơn hàng
             </Link>
             <Link to="/profile" className="nav-link">
