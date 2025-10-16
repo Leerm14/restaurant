@@ -1,0 +1,48 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import "./Components.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
+const Header: React.FC = () => {
+  return (
+    <header className="header">
+      <div className="header-container">
+        <div className="header-content">
+          {/* Logo */}
+          <div className="logo">
+            <img src="./src/assets/logo.svg" alt="Logo" />
+          </div>
+
+          {/* Navigation Menu */}
+          <nav className="nav-menu">
+            <Link to="/" className="nav-link">
+              Trang chủ
+            </Link>
+            <Link to="/menu" className="nav-link">
+              Menu
+            </Link>
+            <Link to="/booking" className="nav-link">
+              Đặt bàn
+            </Link>
+            <Link to="/orders" className="nav-link">
+              Lịch sử đơn hàng
+            </Link>
+            <Link to="/profile" className="nav-link">
+              Thông tin cá nhân
+            </Link>
+          </nav>
+
+          {/* Account Button */}
+          <div className="account-section">
+            <button className="account-button">
+              <i className="fa-solid fa-right-from-bracket"></i>
+              <span>Tài khoản</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
