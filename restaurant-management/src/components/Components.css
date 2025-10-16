@@ -66,10 +66,12 @@
   align-items: center;
   gap: 0.5rem;
   transition: background-color 0.3s ease;
+  text-decoration: none;
 }
 
 .account-button:hover {
   background-color: #faf5ff;
+  color: #6d28d9;
 }
 
 .account-icon {

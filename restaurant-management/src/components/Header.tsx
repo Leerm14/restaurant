@@ -34,10 +34,10 @@ const Header: React.FC = () => {
 
           {/* Account Button */}
           <div className="account-section">
-            <button className="account-button">
+            <Link to="/signin" className="account-button">
               <i className="fa-solid fa-right-from-bracket"></i>
-              <span>Tài khoản</span>
-            </button>
+              <span>Đăng nhập</span>
+            </Link>
           </div>
         </div>
       </div>
