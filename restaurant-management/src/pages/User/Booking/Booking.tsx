@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import "./Booking.css";
-import Button from "../../components/Button.tsx";
+import Button from "../../../components/Button.tsx";
 
 interface Table {
   id: number;

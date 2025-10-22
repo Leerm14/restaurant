@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Menu.css";
-import MenuCard from "../../components/MenuCard.tsx";
-import MenuCardHighlight from "../../components/MenuCardHighlight.tsx";
-import Button from "../../components/Button.tsx";
+import MenuCard from "../../../components/MenuCard.tsx";
+import MenuCardHighlight from "../../../components/MenuCardHighlight.tsx";
+import Button from "../../../components/Button.tsx";
 import {
   getAllMenu,
   getMenuByCategory,
   MenuItem,
-} from "../../services/mockData.ts";
+} from "../../../services/mockData.ts";
 
 interface Category {
   id: string;

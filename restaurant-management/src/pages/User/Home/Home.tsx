@@ -1,8 +1,8 @@
 import React from "react";
 import "./Home.css";
-import Button from "../../components/Button.tsx";
-import MenuCardHighlight from "../../components/MenuCardHighlight.tsx";
-import { getFeaturedMenu, MenuItem } from "../../services/mockData.ts";
+import Button from "../../../components/Button.tsx";
+import MenuCardHighlight from "../../../components/MenuCardHighlight.tsx";
+import { getFeaturedMenu, MenuItem } from "../../../services/mockData.ts";
 import { Link } from "react-router-dom";
 
 const Home: React.FC = () => {

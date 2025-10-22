@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "./Components.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
-const Header: React.FC = () => {
+const HeaderAdmin: React.FC = () => {
   return (
     <header className="header">
       <div className="header-container">
@@ -12,26 +12,6 @@ const Header: React.FC = () => {
           <div className="logo">
             <img src="./src/assets/logo.svg" alt="Logo" />
           </div>
-
-          {/* Navigation Menu */}
-          <nav className="nav-menu">
-            <Link to="/" className="nav-link">
-              Trang chủ
-            </Link>
-            <Link to="/menu" className="nav-link">
-              Menu
-            </Link>
-            <Link to="/booking" className="nav-link">
-              Đặt bàn
-            </Link>
-            <Link to="/order-history" className="nav-link">
-              Lịch sử đơn hàng
-            </Link>
-            <Link to="/profile" className="nav-link">
-              Thông tin cá nhân
-            </Link>
-          </nav>
-
           {/* Account Button */}
           <div className="account-section">
             <Link to="/signin" className="account-button">
@@ -45,4 +25,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header;
+export default HeaderAdmin;
