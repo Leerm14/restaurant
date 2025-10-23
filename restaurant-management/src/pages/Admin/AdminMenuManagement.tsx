@@ -308,18 +308,18 @@ const AdminMenuManagement: React.FC = () => {
               </div>
 
               <div className="menu-info-admin">
-                <h3>{item.name}</h3>
-                <p className="menu-price">{formatPrice(item.price)}</p>
-                <p className="menu-category">{item.category}</p>
-
-                <div className="menu-card-actions">
-                  <button className="btn-quick-edit">
-                    <i className="fas fa-edit"></i> Chi tiết
-                  </button>
-                  <button className="btn-toggle-status">
-                    <i className="fas fa-eye"></i> Chi tiết
-                  </button>
+                <div className="menu-main-info">
+                  <div className="menu-text-info">
+                    <h3>{item.name}</h3>
+                    <p className="menu-price">{formatPrice(item.price)}</p>
+                  </div>
+                  <p className="menu-category" data-category={item.category}>
+                    {item.category}
+                  </p>
                 </div>
+                {item.description && (
+                  <p className="menu-description">{item.description}</p>
+                )}
               </div>
             </div>
           ))}

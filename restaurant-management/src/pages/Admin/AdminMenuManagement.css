@@ -341,25 +341,79 @@
   padding: 1.5rem;
 }
 
+.menu-main-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.menu-text-info {
+  flex: 1;
+  min-width: 0; /* Allows text to truncate if needed */
+}
+
 .menu-info-admin h3 {
   font-size: 1.2rem;
   color: #2c3e50;
   margin-bottom: 0.5rem;
   font-weight: 600;
+  line-height: 1.3;
 }
 
 .menu-price {
   font-size: 1.1rem;
   color: #e74c3c;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin: 0;
 }
 
 .menu-category {
-  color: #6c757d;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+  display: inline-block;
+  padding: 4px 12px;
+  border: 1px solid;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin: 0;
   text-transform: capitalize;
+  background: transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+/* Category-specific colors for menu cards */
+.menu-category[data-category="Mon chinh"] {
+  border-color: var(--green);
+  color: var(--green);
+  background-color: rgba(39, 174, 96, 0.1);
+}
+
+.menu-category[data-category="Do uong"] {
+  border-color: var(--blue);
+  color: var(--blue);
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.menu-category[data-category="Trang mieng"] {
+  border-color: var(--purple);
+  color: var(--purple);
+  background-color: rgba(142, 68, 173, 0.1);
+}
+
+.menu-description {
+  color: #495057;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .menu-card-actions {
