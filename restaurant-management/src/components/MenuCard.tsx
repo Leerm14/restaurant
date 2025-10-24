@@ -7,6 +7,7 @@ interface MenuCardProps {
   title: string;
   description: string;
   price: string;
+  category?: string;
   alt?: string;
   onAddToCart?: (item: { title: string; price: string; image: string }) => void;
 }
@@ -17,6 +18,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
   title,
   description,
   price,
+  category,
   alt,
   onAddToCart,
 }) => {
@@ -34,6 +36,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
       </div>
       <div className="menu-info">
         <h3>{title}</h3>
+        {category && <span className="menu-category">{category}</span>}
         <p>{description}</p>
         <div className="price-action">
           <span className="price">{price}</span>

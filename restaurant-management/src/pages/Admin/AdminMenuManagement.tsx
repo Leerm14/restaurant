@@ -16,6 +16,20 @@ const AdminMenuManagement: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
+  const [newCategory, setNewCategory] = useState({
+    name: "",
+    color: "green",
+  });
+  const [newItem, setNewItem] = useState({
+    name: "",
+    price: "",
+    category: "Mon chinh",
+    status: "available" as "available" | "unavailable",
+    description: "",
+    image: "",
+  });
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -139,12 +153,12 @@ const AdminMenuManagement: React.FC = () => {
     },
   ]);
 
-  const categories = [
+  const [categories, setCategories] = useState([
     { id: "all", name: "Tất cả danh mục", color: "gray" },
     { id: "Mon chinh", name: "Món chính", color: "green" },
     { id: "Do uong", name: "Đồ uống", color: "blue" },
     { id: "Trang mieng", name: "Tráng miệng", color: "purple" },
-  ];
+  ]);
 
   const statusFilters = [
     { id: "all", name: "Tất cả trạng thái", color: "gray" },
@@ -169,7 +183,86 @@ const AdminMenuManagement: React.FC = () => {
   });
 
   const handleAddItem = () => {
-    console.log("Add new item");
+    setIsAddModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsAddModalOpen(false);
+    setNewItem({
+      name: "",
+      price: "",
+      category: "Mon chinh",
+      status: "available",
+      description: "",
+      image: "",
+    });
+  };
+
+  const handleSaveNewItem = () => {
+    if (!newItem.name || !newItem.price) {
+      alert("Vui lòng nhập tên món và giá!");
+      return;
+    }
+
+    const newMenuItem: MenuItem = {
+      id: (menuItems.length + 1).toString(),
+      name: newItem.name,
+      price: parseInt(newItem.price),
+      category: newItem.category,
+      status: newItem.status,
+      description: newItem.description,
+      image:
+        newItem.image ||
+        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop",
+    };
+
+    setMenuItems([...menuItems, newMenuItem]);
+    handleCloseModal();
+    alert("Thêm món mới thành công!");
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setNewItem((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleAddCategory = () => {
+    setIsAddCategoryModalOpen(true);
+  };
+
+  const handleCloseCategoryModal = () => {
+    setIsAddCategoryModalOpen(false);
+    setNewCategory({
+      name: "",
+      color: "green",
+    });
+  };
+
+  const handleSaveNewCategory = () => {
+    if (!newCategory.name.trim()) {
+      alert("Vui lòng nhập tên danh mục!");
+      return;
+    }
+
+    const categoryId = newCategory.name.toLowerCase().replace(/\s+/g, "_");
+    const newCategoryItem = {
+      id: categoryId,
+      name: newCategory.name,
+      color: newCategory.color,
+    };
+
+    setCategories((prev) => [...prev, newCategoryItem]);
+    handleCloseCategoryModal();
+    alert("Thêm danh mục mới thành công!");
+  };
+
+  const handleCategoryInputChange = (field: string, value: string) => {
+    setNewCategory((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleEditItem = (item: MenuItem) => {
@@ -277,6 +370,15 @@ const AdminMenuManagement: React.FC = () => {
                 {category.name}
               </button>
             ))}
+
+            {/* Add Category Button */}
+            <button
+              className="filter-btn add-category-btn"
+              onClick={handleAddCategory}
+              title="Thêm danh mục mới"
+            >
+              <i className="fas fa-plus"></i> Thêm danh mục
+            </button>
           </div>
         </div>
 
@@ -341,6 +443,203 @@ const AdminMenuManagement: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Add Item Modal */}
+      {isAddModalOpen && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>
+                <i className="fas fa-plus"></i> Thêm Món Mới
+              </h2>
+              <button className="modal-close-btn" onClick={handleCloseModal}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="form-group">
+                <label>
+                  Tên món <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Nhập tên món ăn..."
+                  value={newItem.name}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>
+                    Giá (VNĐ) <span className="required">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="85000"
+                    value={newItem.price}
+                    onChange={(e) => handleInputChange("price", e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Danh mục</label>
+                  <select
+                    value={newItem.category}
+                    onChange={(e) =>
+                      handleInputChange("category", e.target.value)
+                    }
+                  >
+                    {categories
+                      .filter((cat) => cat.id !== "all")
+                      .map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Trạng thái</label>
+                <select
+                  value={newItem.status}
+                  onChange={(e) => handleInputChange("status", e.target.value)}
+                >
+                  <option value="available">Có sẵn</option>
+                  <option value="unavailable">Hết hàng</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Mô tả</label>
+                <textarea
+                  placeholder="Mô tả chi tiết về món ăn..."
+                  value={newItem.description}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
+                  rows={3}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Hình ảnh món ăn</label>
+                <div className="image-upload-area">
+                  <input
+                    type="text"
+                    placeholder="URL hình ảnh hoặc kéo và thả hình ảnh vào đây..."
+                    value={newItem.image}
+                    onChange={(e) => handleInputChange("image", e.target.value)}
+                  />
+                  <div className="upload-hint">
+                    <i className="fas fa-cloud-upload-alt"></i>
+                    <span>Kéo và thả hình ảnh vào đây hoặc dán URL</span>
+                    <small>Định dạng: JPG, PNG. Kích thước tối đa: 5MB</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={handleCloseModal}>
+                <i className="fas fa-times"></i> Hủy
+              </button>
+              <button className="btn-save" onClick={handleSaveNewItem}>
+                <i className="fas fa-save"></i> Thêm món
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Category Modal */}
+      {isAddCategoryModalOpen && (
+        <div className="modal-overlay" onClick={handleCloseCategoryModal}>
+          <div
+            className="modal-content category-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h2>
+                <i className="fas fa-tags"></i> Thêm Danh Mục Mới
+              </h2>
+              <button
+                className="modal-close-btn"
+                onClick={handleCloseCategoryModal}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="form-group">
+                <label>
+                  Tên danh mục <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ví dụ: Món khai vị, Món nướng..."
+                  value={newCategory.name}
+                  onChange={(e) =>
+                    handleCategoryInputChange("name", e.target.value)
+                  }
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Màu sắc</label>
+                <div className="color-picker">
+                  {["green", "blue", "purple", "red", "orange", "pink"].map(
+                    (color) => (
+                      <button
+                        key={color}
+                        className={`color-option ${
+                          newCategory.color === color ? "selected" : ""
+                        }`}
+                        style={{ backgroundColor: `var(--${color})` }}
+                        onClick={() =>
+                          handleCategoryInputChange("color", color)
+                        }
+                        title={color}
+                      >
+                        {newCategory.color === color && (
+                          <i className="fas fa-check"></i>
+                        )}
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div className="category-preview">
+                <label>Xem trước:</label>
+                <button
+                  className="filter-btn preview-btn"
+                  style={{
+                    backgroundColor: `var(--${newCategory.color})`,
+                    borderColor: `var(--${newCategory.color})`,
+                    color: "white",
+                  }}
+                >
+                  {newCategory.name || "Tên danh mục"}
+                </button>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={handleCloseCategoryModal}>
+                <i className="fas fa-times"></i> Hủy
+              </button>
+              <button className="btn-save" onClick={handleSaveNewCategory}>
+                <i className="fas fa-save"></i> Thêm danh mục
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
