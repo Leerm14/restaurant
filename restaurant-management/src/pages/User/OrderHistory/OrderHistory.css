@@ -82,7 +82,7 @@
 }
 
 /* Status Badges */
-.status-badge {
+.status-badge-order-history {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -167,7 +167,7 @@
     font-size: 13px;
   }
 
-  .status-badge {
+  .status-badge-order-history {
     padding: 4px 8px;
     font-size: 11px;
     min-width: 70px;
@@ -185,7 +185,7 @@
     font-size: 12px;
   }
 
-  .status-badge {
+  .status-badge-order-history {
     padding: 3px 6px;
     font-size: 10px;
     min-width: 60px;

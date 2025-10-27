@@ -2,11 +2,10 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout.tsx";
 import AuthLayout from "./layouts/AuthLayout.tsx";
-import AdminLayout from "./layouts/Adminlayout.tsx";
 import Home from "./pages/User/Home/Home.tsx";
 import Menu from "./pages/User/Menu/Menu.tsx";
 import Booking from "./pages/User/Booking/Booking.tsx";
-import SignIn from "./pages/Auth/SignIn.tsx";
+import Sign from "./pages/Auth/sign.tsx";
 import OrderHistory from "./pages/User/OrderHistory/OrderHistory.tsx";
 import AdminDashboardDemo from "./pages/Admin/AdminDashboardDemo.tsx";
 
@@ -19,7 +18,7 @@ function App(): React.ReactElement {
           path="/signin"
           element={
             <AuthLayout>
-              <SignIn />
+              <Sign />
             </AuthLayout>
           }
         />

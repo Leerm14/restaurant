@@ -99,7 +99,9 @@ const OrderHistory: React.FC = () => {
                   <td className="order-total">{order.total}</td>
                   <td>
                     <span
-                      className={`status-badge ${getStatusClass(order.status)}`}
+                      className={`status-badge-order-history ${getStatusClass(
+                        order.status
+                      )}`}
                     >
                       {order.status}
                     </span>
