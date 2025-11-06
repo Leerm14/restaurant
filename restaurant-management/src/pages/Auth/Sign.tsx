@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./sign.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-
+import { getAuth } from "firebase/auth";
 const Sign: React.FC = () => {
   const [rightActive, setRightActive] = useState(false);
 

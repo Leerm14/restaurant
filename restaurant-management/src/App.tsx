@@ -5,7 +5,7 @@ import AuthLayout from "./layouts/AuthLayout.tsx";
 import Home from "./pages/User/Home/Home.tsx";
 import Menu from "./pages/User/Menu/Menu.tsx";
 import Booking from "./pages/User/Booking/Booking.tsx";
-import Sign from "./pages/Auth/sign.tsx";
+import Sign from "./pages/Auth/Sign.tsx";
 import OrderHistory from "./pages/User/OrderHistory/OrderHistory.tsx";
 import AdminDashboardDemo from "./pages/Admin/AdminDashboardDemo.tsx";
 
