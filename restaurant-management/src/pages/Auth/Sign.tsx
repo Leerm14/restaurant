@@ -59,12 +59,16 @@ const Sign: React.FC = () => {
         signUpEmail,
         signUpPassword
       );
-      await apiClient.post("/api/users", {
-        uid: userCredential.user.uid,
-        fullName: signUpName,
-        email: signUpEmail,
-        phoneNumber: signUpPhone,
-      });
+      await apiClient
+        .post("/api/users", {
+          uid: userCredential.user.uid,
+          fullName: signUpName,
+          email: signUpEmail,
+          phoneNumber: signUpPhone,
+        })
+        .then(() => {
+          console.log("New user created in backend");
+        });
       setSuccess("Đăng ký thành công!");
       console.log("User created:", userCredential.user);
 
@@ -149,12 +153,16 @@ const Sign: React.FC = () => {
       const result = await signInWithPopup(auth, provider);
       const additionalInfo = getAdditionalUserInfo(result);
       if (additionalInfo?.isNewUser) {
-        await apiClient.post("/api/users", {
-          uid: result.user.uid,
-          fullName: result.user.displayName,
-          email: result.user.email,
-          phoneNumber: result.user.phoneNumber,
-        });
+        await apiClient
+          .post("/api/users", {
+            uid: result.user.uid,
+            fullName: result.user.displayName,
+            email: result.user.email,
+            phoneNumber: result.user.phoneNumber,
+          })
+          .then(() => {
+            console.log("New user created in backend");
+          });
       }
       setSuccess("Đăng nhập bằng Google thành công!");
       console.log("User signed in with Google:", result.user);
