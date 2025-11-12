@@ -278,3 +278,29 @@ button.ghost {
   font-size: 13px;
   color: rgba(0, 0, 0, 0.6);
 }
+
+.error-message {
+  color: #ff4b2b;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 10px 0;
+  padding: 8px 12px;
+  background-color: #ffe6e6;
+  border-radius: 5px;
+  border-left: 4px solid #ff4b2b;
+  width: 100%;
+  text-align: left;
+}
+
+.success-message {
+  color: #4caf50;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 10px 0;
+  padding: 8px 12px;
+  background-color: #e8f5e9;
+  border-radius: 5px;
+  border-left: 4px solid #4caf50;
+  width: 100%;
+  text-align: left;
+}

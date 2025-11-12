@@ -1,9 +1,172 @@
 import React, { useState } from "react";
 import "./sign.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { getAuth } from "firebase/auth";
+import { auth } from "../../firebaseConfig";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  getAdditionalUserInfo,
+} from "firebase/auth";
+import apiClient from "../../services/api";
+import { useNavigate } from "react-router-dom";
+
 const Sign: React.FC = () => {
   const [rightActive, setRightActive] = useState(false);
+  const navigate = useNavigate();
+
+  const [signUpName, setSignUpName] = useState("");
+  const [signUpEmail, setSignUpEmail] = useState("");
+  const [signUpPhone, setSignUpPhone] = useState("");
+  const [signUpPassword, setSignUpPassword] = useState("");
+  const [signUpConfirmPassword, setSignUpConfirmPassword] = useState("");
+
+  const [signInEmail, setSignInEmail] = useState("");
+  const [signInPassword, setSignInPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    if (
+      !signUpName ||
+      !signUpEmail ||
+      !signUpPhone ||
+      !signUpPassword ||
+      !signUpConfirmPassword
+    ) {
+      setError("Vui lòng điền đầy đủ thông tin");
+      return;
+    }
+
+    if (signUpPassword !== signUpConfirmPassword) {
+      setError("Mật khẩu xác nhận không khớp");
+      return;
+    }
+
+    if (signUpPassword.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự");
+      return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        signUpEmail,
+        signUpPassword
+      );
+      await apiClient.post("/api/users", {
+        uid: userCredential.user.uid,
+        fullName: signUpName,
+        email: signUpEmail,
+        phoneNumber: signUpPhone,
+      });
+      setSuccess("Đăng ký thành công!");
+      console.log("User created:", userCredential.user);
+
+      setSignUpName("");
+      setSignUpEmail("");
+      setSignUpPhone("");
+      setSignUpPassword("");
+      setSignUpConfirmPassword("");
+
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    } catch (error: any) {
+      console.error("Error signing up:", error);
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          setError("Email đã được sử dụng");
+          break;
+        case "auth/invalid-email":
+          setError("Email không hợp lệ");
+          break;
+        case "auth/weak-password":
+          setError("Mật khẩu quá yếu");
+          break;
+        default:
+          setError("Đăng ký thất bại. Vui lòng thử lại");
+      }
+    }
+  };
+
+  // Handle Sign In
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!signInEmail || !signInPassword) {
+      setError("Vui lòng điền email và mật khẩu");
+      return;
+    }
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        signInEmail,
+        signInPassword
+      );
+
+      setSuccess("Đăng nhập thành công!");
+      console.log("User signed in:", userCredential.user);
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    } catch (error: any) {
+      console.error("Error signing in:", error);
+      switch (error.code) {
+        case "auth/user-not-found":
+          setError("Không tìm thấy tài khoản");
+          break;
+        case "auth/wrong-password":
+          setError("Mật khẩu không đúng");
+          break;
+        case "auth/invalid-email":
+          setError("Email không hợp lệ");
+          break;
+        case "auth/invalid-credential":
+          setError("Email hoặc mật khẩu không đúng");
+          break;
+        default:
+          setError("Đăng nhập thất bại. Vui lòng thử lại");
+      }
+    }
+  };
+
+  // Handle Google Sign In
+  const handleGoogleSignIn = async () => {
+    setError("");
+    setSuccess("");
+    const provider = new GoogleAuthProvider();
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const additionalInfo = getAdditionalUserInfo(result);
+      if (additionalInfo?.isNewUser) {
+        await apiClient.post("/api/users", {
+          uid: result.user.uid,
+          fullName: result.user.displayName,
+          email: result.user.email,
+          phoneNumber: result.user.phoneNumber,
+        });
+      }
+      setSuccess("Đăng nhập bằng Google thành công!");
+      console.log("User signed in with Google:", result.user);
+
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    } catch (error: any) {
+      console.error("Error signing in with Google:", error);
+      setError("Đăng nhập bằng Google thất bại");
+    }
+  };
 
   return (
     <div className="body-sign">
@@ -12,19 +175,33 @@ const Sign: React.FC = () => {
         id="container"
       >
         <div className="form-container sign-up-container">
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={handleSignUp}>
             <h1>Create Account</h1>
+            {error && rightActive && <p className="error-message">{error}</p>}
+            {success && rightActive && (
+              <p className="success-message">{success}</p>
+            )}
             <div className="input-group">
               <span className="input-icon">
                 <i className="fas fa-user" aria-hidden />
               </span>
-              <input type="text" placeholder="Name" />
+              <input
+                type="text"
+                placeholder="Name"
+                value={signUpName}
+                onChange={(e) => setSignUpName(e.target.value)}
+              />
             </div>
             <div className="input-group">
               <span className="input-icon">
                 <i className="fas fa-envelope" aria-hidden />
               </span>
-              <input type="email" placeholder="Email" />
+              <input
+                type="email"
+                placeholder="Email"
+                value={signUpEmail}
+                onChange={(e) => setSignUpEmail(e.target.value)}
+              />
             </div>
             <div className="input-group">
               <span className="input-icon">
@@ -36,33 +213,56 @@ const Sign: React.FC = () => {
                 placeholder="Phone number"
                 aria-label="Phone number"
                 pattern="[0-9]{9,12}"
-                required
+                value={signUpPhone}
+                onChange={(e) => setSignUpPhone(e.target.value)}
               />
             </div>
             <div className="input-group">
               <span className="input-icon">
                 <i className="fas fa-lock" aria-hidden />
               </span>
-              <input type="password" placeholder="Password" />
+              <input
+                type="password"
+                placeholder="Password"
+                value={signUpPassword}
+                onChange={(e) => setSignUpPassword(e.target.value)}
+              />
             </div>
             <div className="input-group">
               <span className="input-icon">
                 <i className="fas fa-lock" aria-hidden />
               </span>
-              <input type="password" placeholder="Confirm Password" />
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={signUpConfirmPassword}
+                onChange={(e) => setSignUpConfirmPassword(e.target.value)}
+              />
             </div>
             <button type="submit">Sign Up</button>
           </form>
         </div>
 
         <div className="form-container sign-in-container">
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={handleSignIn}>
             <h1>Sign in</h1>
+            {error && !rightActive && <p className="error-message">{error}</p>}
+            {success && !rightActive && (
+              <p className="success-message">{success}</p>
+            )}
             <div className="social-container">
               <a href="#" className="social" aria-label="facebook">
                 <i className="fab fa-facebook-f" />
               </a>
-              <a href="#" className="social" aria-label="google">
+              <a
+                href="#"
+                className="social"
+                aria-label="google"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleGoogleSignIn();
+                }}
+              >
                 <i className="fab fa-google-plus-g" />
               </a>
               <a href="#" className="social" aria-label="linkedin">
@@ -74,13 +274,23 @@ const Sign: React.FC = () => {
               <span className="input-icon">
                 <i className="fas fa-envelope" aria-hidden />
               </span>
-              <input type="email" placeholder="Email" />
+              <input
+                type="email"
+                placeholder="Email"
+                value={signInEmail}
+                onChange={(e) => setSignInEmail(e.target.value)}
+              />
             </div>
             <div className="input-group">
               <span className="input-icon">
                 <i className="fas fa-lock" aria-hidden />
               </span>
-              <input type="password" placeholder="Password" />
+              <input
+                type="password"
+                placeholder="Password"
+                value={signInPassword}
+                onChange={(e) => setSignInPassword(e.target.value)}
+              />
             </div>
             <a href="#">Forgot your password?</a>
             <button type="submit">Sign In</button>
