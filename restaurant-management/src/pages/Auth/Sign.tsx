@@ -5,9 +5,6 @@ import { auth } from "../../firebaseConfig";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-  getAdditionalUserInfo,
   UserCredential,
 } from "firebase/auth";
 import apiClient from "../../services/api";
@@ -169,39 +166,6 @@ const Sign: React.FC = () => {
       }
     }
   };
-  const handleGoogleSignIn = async () => {
-    setError("");
-    setSuccess("");
-    const provider = new GoogleAuthProvider();
-
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const additionalInfo = getAdditionalUserInfo(result);
-      console.log(additionalInfo?.isNewUser);
-      console.log(additionalInfo);
-      if (additionalInfo?.isNewUser) {
-        await apiClient
-          .post("/api/users", {
-            uid: result.user.uid,
-            fullName: result.user.displayName,
-            email: result.user.email,
-            phoneNumber: result.user.phoneNumber,
-          })
-          .then(() => {
-            console.log("New user created in backend");
-          });
-      }
-      setSuccess("Đăng nhập bằng Google thành công!");
-      console.log("User signed in with Google:", result.user);
-
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
-    } catch (error: any) {
-      console.error("Error signing in with Google:", error);
-      setError("Đăng nhập bằng Google thất bại");
-    }
-  };
 
   return (
     <div className="body-sign">
@@ -285,26 +249,6 @@ const Sign: React.FC = () => {
             {success && !rightActive && (
               <p className="success-message">{success}</p>
             )}
-            <div className="social-container">
-              <a href="#" className="social" aria-label="facebook">
-                <i className="fab fa-facebook-f" />
-              </a>
-              <a
-                href="#"
-                className="social"
-                aria-label="google"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleGoogleSignIn();
-                }}
-              >
-                <i className="fab fa-google-plus-g" />
-              </a>
-              <a href="#" className="social" aria-label="linkedin">
-                <i className="fab fa-linkedin-in" />
-              </a>
-            </div>
-            <span>or use your account</span>
             <div className="input-group">
               <span className="input-icon">
                 <i className="fas fa-envelope" aria-hidden />

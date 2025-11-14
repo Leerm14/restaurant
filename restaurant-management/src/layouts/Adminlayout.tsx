@@ -30,25 +30,20 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
 
   return (
     <div className="admin-layout">
-      {/* Header Admin */}
       <div className="admin-header-wrapper">
         <Headeradmin />
       </div>
 
-      {/* Main Content Area */}
       <div className="admin-main-wrapper">
-        {/* Navigation Sidebar */}
         <div className={`admin-sidebar ${isSidebarOpen ? "open" : "closed"}`}>
           <Navadmin onMenuSelect={handleMenuSelect} activeMenu={selectedMenu} />
         </div>
 
-        {/* Content Area */}
         <div
           className={`admin-content-area ${
             isSidebarOpen ? "with-sidebar" : "full-width"
           }`}
         >
-          {/* Toggle Sidebar Button */}
           <button
             className="sidebar-toggle-btn"
             onClick={toggleSidebar}
@@ -60,8 +55,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
               }`}
             ></i>
           </button>
-
-          {/* Page Content */}
           <div className="admin-page-content">{children}</div>
         </div>
       </div>

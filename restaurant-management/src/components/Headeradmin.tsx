@@ -8,16 +8,14 @@ const HeaderAdmin: React.FC = () => {
     <header className="header">
       <div className="header-container">
         <div className="header-content">
-          {/* Logo */}
           <div className="logo">
             <img src="./src/assets/logo.svg" alt="Logo" />
           </div>
-          {/* Account Button */}
           <div className="account-section">
-            <Link to="/signin" className="account-button">
-              <i className="fa-regular fa-circle-user"></i>
-              <span>Đăng nhập</span>
-            </Link>
+            <div className="account-button">
+              <i className="fa-solid fa-right-from-bracket"></i>
+              <span>Đăng xuất</span>
+            </div>
           </div>
         </div>
       </div>
