@@ -6,6 +6,8 @@ import React, {
   ReactNode,
 } from "react";
 import apiClient from "../services/api";
+import { auth } from "../firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 
 export type UserRole = "user" | "staff" | "admin";
 
@@ -46,12 +48,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const logout = () => {
+    auth.signOut();
     setIsAuthenticated(false);
     setUserRole(null);
   };
 
   useEffect(() => {
-    fetchUserInfo();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchUserInfo();
+      } else {
+        setIsAuthenticated(false);
+        setUserRole(null);
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (
