@@ -9,10 +9,12 @@ import {
 } from "firebase/auth";
 import apiClient from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Sign: React.FC = () => {
   const [rightActive, setRightActive] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [signUpName, setSignUpName] = useState("");
   const [signUpEmail, setSignUpEmail] = useState("");
@@ -94,6 +96,10 @@ const Sign: React.FC = () => {
         setSignUpPhone("");
         setSignUpPassword("");
         setSignUpConfirmPassword("");
+
+        // Gọi login để cập nhật AuthContext
+        await login();
+
         setTimeout(() => {
           navigate("/");
         }, 1000);
@@ -140,6 +146,9 @@ const Sign: React.FC = () => {
         signInEmail,
         signInPassword
       );
+
+      // Gọi login để cập nhật AuthContext
+      await login();
 
       setSuccess("Đăng nhập thành công!");
       console.log("User signed in:", userCredential.user);
