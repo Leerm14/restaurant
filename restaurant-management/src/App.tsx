@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout.tsx";
+import AdminLayout from "./layouts/Adminlayout.tsx";
 import AuthLayout from "./layouts/AuthLayout.tsx";
 import Home from "./pages/User/Home/Home.tsx";
 import Menu from "./pages/User/Menu/Menu.tsx";
@@ -24,7 +25,16 @@ function App(): React.ReactElement {
         />
 
         {/* Admin Routes */}
-        <Route path="/admin" element={<AdminDashboardDemo />} />
+        <Route
+          path="/admin/*"
+          element={
+            <AdminLayout>
+              <Routes>
+                <Route path="/dashboard" element={<AdminDashboardDemo />} />
+              </Routes>
+            </AdminLayout>
+          }
+        />
 
         {/* Main Routes */}
         <Route

@@ -8,6 +8,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   getAdditionalUserInfo,
+  UserCredential,
 } from "firebase/auth";
 import apiClient from "../../services/api";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +33,7 @@ const Sign: React.FC = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
     if (
       !signUpName ||
       !signUpEmail ||
@@ -42,47 +44,24 @@ const Sign: React.FC = () => {
       setError("Vui lòng điền đầy đủ thông tin");
       return;
     }
-
     if (signUpPassword !== signUpConfirmPassword) {
       setError("Mật khẩu xác nhận không khớp");
       return;
     }
-
     if (signUpPassword.length < 6) {
       setError("Mật khẩu phải có ít nhất 6 ký tự");
       return;
     }
 
+    let userCredential: UserCredential | null = null;
     try {
-      const userCredential = await createUserWithEmailAndPassword(
+      userCredential = await createUserWithEmailAndPassword(
         auth,
         signUpEmail,
         signUpPassword
       );
-      await apiClient
-        .post("/api/users", {
-          uid: userCredential.user.uid,
-          fullName: signUpName,
-          email: signUpEmail,
-          phoneNumber: signUpPhone,
-        })
-        .then(() => {
-          console.log("New user created in backend");
-        });
-      setSuccess("Đăng ký thành công!");
-      console.log("User created:", userCredential.user);
-
-      setSignUpName("");
-      setSignUpEmail("");
-      setSignUpPhone("");
-      setSignUpPassword("");
-      setSignUpConfirmPassword("");
-
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
     } catch (error: any) {
-      console.error("Error signing up:", error);
+      console.error("Error signing up (Firebase):", error);
       switch (error.code) {
         case "auth/email-already-in-use":
           setError("Email đã được sử dụng");
@@ -94,12 +73,60 @@ const Sign: React.FC = () => {
           setError("Mật khẩu quá yếu");
           break;
         default:
-          setError("Đăng ký thất bại. Vui lòng thử lại");
+          setError("Đăng ký Firebase thất bại. Vui lòng thử lại");
+      }
+      return;
+    }
+
+    if (userCredential) {
+      try {
+        await apiClient.post("/api/users", {
+          uid: userCredential.user.uid,
+          fullName: signUpName,
+          email: signUpEmail,
+          phoneNumber: signUpPhone,
+        });
+        setSuccess("Đăng ký thành công!");
+        console.log(
+          "User created in Firebase and Backend:",
+          userCredential.user
+        );
+
+        setSignUpName("");
+        setSignUpEmail("");
+        setSignUpPhone("");
+        setSignUpPassword("");
+        setSignUpConfirmPassword("");
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      } catch (error: any) {
+        console.error("Error creating user in backend:", error);
+        try {
+          if (userCredential && userCredential.user) {
+            await userCredential.user.delete();
+            console.log(
+              "Orphaned Firebase user deleted due to backend failure."
+            );
+          }
+        } catch (deleteError) {
+          console.error(
+            "Failed to delete orphaned Firebase user:",
+            deleteError
+          );
+        }
+
+        let errorMessage = "Đăng ký thất bại. Vui lòng thử lại.";
+
+        if (error.response && error.response.data) {
+          errorMessage = error.response.data;
+        }
+
+        setError(errorMessage);
       }
     }
   };
 
-  // Handle Sign In
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -142,8 +169,6 @@ const Sign: React.FC = () => {
       }
     }
   };
-
-  // Handle Google Sign In
   const handleGoogleSignIn = async () => {
     setError("");
     setSuccess("");
@@ -152,6 +177,8 @@ const Sign: React.FC = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const additionalInfo = getAdditionalUserInfo(result);
+      console.log(additionalInfo?.isNewUser);
+      console.log(additionalInfo);
       if (additionalInfo?.isNewUser) {
         await apiClient
           .post("/api/users", {
@@ -169,7 +196,7 @@ const Sign: React.FC = () => {
 
       setTimeout(() => {
         navigate("/");
-      }, 1000);
+      }, 2000);
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
       setError("Đăng nhập bằng Google thất bại");
