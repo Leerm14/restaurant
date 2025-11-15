@@ -10,6 +10,14 @@ interface MenuItem {
   image: string;
   description?: string;
 }
+interface NewMenuItem {
+  name: string;
+  description?: string;
+  price: number;
+  categoryId: number;
+  status: "Available" | "Unavailable";
+  file?: File;
+}
 interface Category {
   id: string;
   name: string;
@@ -40,6 +48,7 @@ const AdminMenuManagement: React.FC = () => {
     status: "available" as "available" | "unavailable",
     description: "",
     image: "",
+    file: null as File | null,
   });
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -93,30 +102,34 @@ const AdminMenuManagement: React.FC = () => {
     };
     fetchMenuItems();
   }, [pagemenu, statusFilterValue]);
-  const fetchCategories = async () => {
-    try {
-      const response = await apiClient.get("/api/categories", {
-        params: {
-          page: pagecate,
-          size: 10,
-        },
-      });
-      const randomColor =
-        "#" +
-        Math.floor(Math.random() * 0x1000000)
-          .toString(16)
-          .padStart(6, "0");
-      const cats: Category[] = response.data.map((cat: any) => ({
-        id: cat.id,
-        name: cat.name,
-        color: randomColor,
-      }));
-      console.log(cats);
-      setCategories(cats);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await apiClient.get("/api/categories", {
+          params: {
+            page: pagecate,
+            size: 10,
+          },
+        });
+        const randomColor =
+          "#" +
+          Math.floor(Math.random() * 0x1000000)
+            .toString(16)
+            .padStart(6, "0");
+        const cats: Category[] = response.data.map((cat: any) => ({
+          id: cat.id,
+          name: cat.name,
+          color: randomColor,
+        }));
+        console.log(response.data);
+        console.log(cats);
+        setCategories(cats);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, [pagecate]);
   useEffect(() => {
     const fetchpage = async () => {
       try {
@@ -136,9 +149,9 @@ const AdminMenuManagement: React.FC = () => {
   }, [statusFilterValue]);
 
   const statusFilters = [
-    { id: "all", name: "Tất cả trạng thái", color: "gray" },
-    { id: "available", name: "Có sẵn", color: "green" },
-    { id: "unavailable", name: "Hết hàng", color: "red" },
+    { id: "all", name: "Tất cả trạng thái", color: "gray", value: null },
+    { id: "available", name: "Có sẵn", color: "green", value: true },
+    { id: "unavailable", name: "Hết hàng", color: "red", value: false },
   ];
 
   const statusConfig = {
@@ -150,11 +163,7 @@ const AdminMenuManagement: React.FC = () => {
     const matchesSearch = item.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || item.category === selectedCategory;
-    const matchesStatus =
-      selectedStatus === "all" || item.status === selectedStatus;
-    return matchesSearch && matchesCategory && matchesStatus;
+    return matchesSearch;
   });
 
   const handleAddItem = () => {
@@ -170,30 +179,46 @@ const AdminMenuManagement: React.FC = () => {
       status: "available",
       description: "",
       image: "",
+      file: null,
     });
   };
 
-  const handleSaveNewItem = () => {
+  const handleSaveNewItem = async () => {
     if (!newItem.name || !newItem.price) {
       alert("Vui lòng nhập tên món và giá!");
       return;
     }
 
-    const newMenuItem: MenuItem = {
-      id: (menuItems.length + 1).toString(),
-      name: newItem.name,
-      price: parseInt(newItem.price),
-      category: newItem.category,
-      status: newItem.status,
-      description: newItem.description,
-      image:
-        newItem.image ||
-        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop",
-    };
+    try {
+      const formData = new FormData();
+      formData.append("name", newItem.name);
+      formData.append("price", newItem.price);
+      formData.append("categoryId", newItem.category);
+      formData.append(
+        "status",
+        newItem.status === "available" ? "Available" : "Unavailable"
+      );
+      if (newItem.description) {
+        formData.append("description", newItem.description);
+      }
+      if (newItem.file) {
+        formData.append("file", newItem.file);
+      }
 
-    setMenuItems([...menuItems, newMenuItem]);
-    handleCloseModal();
-    alert("Thêm món mới thành công!");
+      await apiClient.post("/api/menu", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      alert("Thêm món mới thành công!");
+      handleCloseModal();
+      // Refresh danh sách menu
+      setPagemenu(1);
+    } catch (error) {
+      console.error("Error adding menu item:", error);
+      alert("Có lỗi xảy ra khi thêm món!");
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -201,6 +226,16 @@ const AdminMenuManagement: React.FC = () => {
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setNewItem((prev) => ({
+        ...prev,
+        file: file,
+      }));
+    }
   };
 
   const handleAddCategory = () => {
@@ -215,22 +250,26 @@ const AdminMenuManagement: React.FC = () => {
     });
   };
 
-  const handleSaveNewCategory = () => {
+  const handleSaveNewCategory = async () => {
     if (!newCategory.name.trim()) {
       alert("Vui lòng nhập tên danh mục!");
       return;
     }
 
-    const categoryId = newCategory.name.toLowerCase().replace(/\s+/g, "_");
-    const newCategoryItem = {
-      id: categoryId,
-      name: newCategory.name,
-      color: newCategory.color,
-    };
+    try {
+      const newCategoryItem = {
+        name: newCategory.name,
+      };
 
-    setCategories((prev) => [...prev, newCategoryItem]);
-    handleCloseCategoryModal();
-    alert("Thêm danh mục mới thành công!");
+      await apiClient.post("/api/categories", newCategoryItem);
+
+      console.log("Added category:", newCategoryItem);
+      handleCloseCategoryModal();
+      setPagecate(1);
+    } catch (error) {
+      console.error("Error adding category:", error);
+      alert("Có lỗi xảy ra khi thêm danh mục!");
+    }
   };
 
   const handleCategoryInputChange = (field: string, value: string) => {
@@ -506,15 +545,27 @@ const AdminMenuManagement: React.FC = () => {
               <div className="form-group">
                 <label>Hình ảnh món ăn</label>
                 <div className="image-upload-area">
-                  <input
-                    type="text"
-                    placeholder="URL hình ảnh hoặc kéo và thả hình ảnh vào đây..."
-                    value={newItem.image}
-                    onChange={(e) => handleInputChange("image", e.target.value)}
-                  />
                   <div className="upload-hint">
                     <i className="fas fa-cloud-upload-alt"></i>
-                    <span>Kéo và thả hình ảnh vào đây hoặc dán URL</span>
+                    <span>Chọn file hình ảnh</span>
+                    <input
+                      type="file"
+                      id="fileUpload"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      style={{ marginTop: "10px" }}
+                    />
+                    {newItem.file && (
+                      <small
+                        style={{
+                          color: "green",
+                          display: "block",
+                          marginTop: "5px",
+                        }}
+                      >
+                        Đã chọn: {newItem.file.name}
+                      </small>
+                    )}
                     <small>Định dạng: JPG, PNG. Kích thước tối đa: 5MB</small>
                   </div>
                 </div>

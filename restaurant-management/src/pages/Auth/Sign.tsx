@@ -146,10 +146,7 @@ const Sign: React.FC = () => {
         signInEmail,
         signInPassword
       );
-
-      // Gọi login để cập nhật AuthContext
       await login();
-
       setSuccess("Đăng nhập thành công!");
       console.log("User signed in:", userCredential.user);
       setTimeout(() => {
