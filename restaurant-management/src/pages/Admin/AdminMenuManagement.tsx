@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./AdminMenuManagement.css";
-
+import apiClient from "../../services/api";
 interface MenuItem {
   id: string;
   name: string;
@@ -10,8 +10,19 @@ interface MenuItem {
   image: string;
   description?: string;
 }
+interface Category {
+  id: string;
+  name: string;
+  color: string;
+}
 
 const AdminMenuManagement: React.FC = () => {
+  const [pagemenu, setPagemenu] = useState(1);
+  const [pagecate, setPagecate] = useState(1);
+  const [statusFilterValue, setStatusFilterValue] = useState<boolean | null>(
+    null
+  );
+  const [pageCount, setPageCount] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
@@ -49,116 +60,80 @@ const AdminMenuManagement: React.FC = () => {
     };
   }, []);
 
-  // Mock data - giống với hình ảnh
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([
-    {
-      id: "1",
-      name: "Phở Bò Đặc Biệt",
-      price: 85000,
-      category: "Mon chinh",
-      status: "available",
-      image:
-        "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop",
-      description: "Phở bò truyền thống với thịt bò tươi ngon",
-    },
-    {
-      id: "2",
-      name: "Gỏi Cuốn Tôm Thịt",
-      price: 60000,
-      category: "Mon chinh",
-      status: "available",
-      image:
-        "https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&h=300&fit=crop",
-      description: "Gỏi cuốn tôm thịt tươi ngon",
-    },
-    {
-      id: "3",
-      name: "Bún Chả Hà Nội",
-      price: 75000,
-      category: "Mon chinh",
-      status: "available",
-      image:
-        "https://images.unsplash.com/photo-1569997387917-3b951c85b555?w=400&h=300&fit=crop",
-      description: "Bún chả Hà Nội đặc trưng",
-    },
-    {
-      id: "4",
-      name: "Cà Phê Sữa Đá",
-      price: 45000,
-      category: "Do uong",
-      status: "available",
-      image:
-        "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=300&fit=crop",
-      description: "Cà phê sữa đá truyền thống",
-    },
-    {
-      id: "5",
-      name: "Chè Khúc Bach",
-      price: 50000,
-      category: "Trang mieng",
-      status: "available",
-      image:
-        "https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&h=300&fit=crop",
-      description: "Chè khúc bach mát lạnh",
-    },
-    {
-      id: "6",
-      name: "Nem Lại Huế",
-      price: 65000,
-      category: "Mon chinh",
-      status: "unavailable",
-      image:
-        "https://images.unsplash.com/photo-1559847844-d72ee8d6a1d4?w=400&h=300&fit=crop",
-      description: "Nem lại Huế thơm ngon",
-    },
-    {
-      id: "7",
-      name: "Lẩu Thái Chua Cay",
-      price: 250000,
-      category: "Mon chinh",
-      status: "available",
-      image:
-        "https://images.unsplash.com/photo-1569997387976-d8c4b8264e65?w=400&h=300&fit=crop",
-      description: "Lẩu Thái chua cay cho 2-3 người",
-    },
-    {
-      id: "8",
-      name: "Nước Cam Ép",
-      price: 35000,
-      category: "Do uong",
-      status: "available",
-      image:
-        "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400&h=300&fit=crop",
-      description: "Nước cam tươi ép",
-    },
-    {
-      id: "9",
-      name: "Bánh Mì Kẹp",
-      price: 30000,
-      category: "Mon chinh",
-      status: "unavailable",
-      image:
-        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
-      description: "Bánh mì kẹp thịt nướng",
-    },
-    {
-      id: "10",
-      name: "Sinh Tố Bơ",
-      price: 40000,
-      category: "Do uong",
-      status: "unavailable",
-      image:
-        "https://images.unsplash.com/photo-1553530979-172d77df7f89?w=400&h=300&fit=crop",
-      description: "Sinh tố bơ sữa đặc",
-    },
-  ]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
-  const [categories, setCategories] = useState([
-    { id: "all", name: "Tất cả danh mục", color: "gray" },
-    { id: "Mon chinh", name: "Món chính", color: "green" },
-    { id: "Do uong", name: "Đồ uống", color: "blue" },
-    { id: "Trang mieng", name: "Tráng miệng", color: "purple" },
-  ]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  // gọi api
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const response = await apiClient.get("/api/menu", {
+          params: {
+            available: statusFilterValue,
+            page: pagemenu,
+            size: 10,
+          },
+        });
+        const items: MenuItem[] = response.data.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          category: item.category.name,
+          status: item.status,
+          image:
+            item.imageUrl ||
+            "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop",
+          description: item.description,
+        }));
+        console.log(items);
+        setMenuItems(items);
+      } catch (error) {
+        console.error("Error fetching menu items:", error);
+      }
+    };
+    fetchMenuItems();
+  }, [pagemenu, statusFilterValue]);
+  const fetchCategories = async () => {
+    try {
+      const response = await apiClient.get("/api/categories", {
+        params: {
+          page: pagecate,
+          size: 10,
+        },
+      });
+      const randomColor =
+        "#" +
+        Math.floor(Math.random() * 0x1000000)
+          .toString(16)
+          .padStart(6, "0");
+      const cats: Category[] = response.data.map((cat: any) => ({
+        id: cat.id,
+        name: cat.name,
+        color: randomColor,
+      }));
+      console.log(cats);
+      setCategories(cats);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+  useEffect(() => {
+    const fetchpage = async () => {
+      try {
+        const response = await apiClient.get("/api/menu/page-count", {
+          params: {
+            available: statusFilterValue,
+            size: 10,
+          },
+        });
+        console.log(response.data);
+        setPageCount(response.data);
+      } catch (error) {
+        console.error("Error fetching page count:", error);
+      }
+    };
+    fetchpage();
+  }, [statusFilterValue]);
 
   const statusFilters = [
     { id: "all", name: "Tất cả trạng thái", color: "gray" },
@@ -331,6 +306,14 @@ const AdminMenuManagement: React.FC = () => {
                         }`}
                         onClick={() => {
                           setSelectedStatus(status.id);
+                          // Cập nhật statusFilterValue cho API call
+                          if (status.id === "all") {
+                            setStatusFilterValue(null);
+                          } else if (status.id === "available") {
+                            setStatusFilterValue(true);
+                          } else if (status.id === "unavailable") {
+                            setStatusFilterValue(false);
+                          }
                           setIsStatusDropdownOpen(false);
                         }}
                       >
@@ -432,12 +415,7 @@ const AdminMenuManagement: React.FC = () => {
           <button className="pagination-btn">
             <i className="fas fa-chevron-left"></i> Previous
           </button>
-          <div className="page-numbers">
-            <button className="page-btn active">1</button>
-            <button className="page-btn">2</button>
-            <button className="page-btn">3</button>
-            <span>...</span>
-          </div>
+          <div className="page-numbers"></div>
           <button className="pagination-btn">
             Next <i className="fas fa-chevron-right"></i>
           </button>

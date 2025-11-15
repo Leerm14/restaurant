@@ -33,7 +33,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       const response = await apiClient.get("/api/users/me");
       setUserRole(response.data.role);
       setIsAuthenticated(true);
-      console.log("User info fetched:", response.data);
     } catch (error) {
       console.error("Failed to fetch user info", error);
       setIsAuthenticated(false);
