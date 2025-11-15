@@ -25,12 +25,14 @@ interface Category {
 }
 
 const AdminMenuManagement: React.FC = () => {
-  const [pagemenu, setPagemenu] = useState(1);
-  const [pagecate, setPagecate] = useState(1);
+  const [pagemenu, setPagemenu] = useState(0);
+  const [pagecate, setPagecate] = useState(0);
   const [statusFilterValue, setStatusFilterValue] = useState<boolean | null>(
     null
   );
   const [pageCount, setPageCount] = useState(1);
+  const [refreshCategories, setRefreshCategories] = useState(0);
+  const [refreshMenu, setRefreshMenu] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
@@ -39,7 +41,6 @@ const AdminMenuManagement: React.FC = () => {
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
   const [newCategory, setNewCategory] = useState({
     name: "",
-    color: "green",
   });
   const [newItem, setNewItem] = useState({
     name: "",
@@ -101,7 +102,7 @@ const AdminMenuManagement: React.FC = () => {
       }
     };
     fetchMenuItems();
-  }, [pagemenu, statusFilterValue]);
+  }, [pagemenu, statusFilterValue, refreshMenu]);
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -111,17 +112,21 @@ const AdminMenuManagement: React.FC = () => {
             size: 10,
           },
         });
-        const randomColor =
-          "#" +
-          Math.floor(Math.random() * 0x1000000)
-            .toString(16)
-            .padStart(6, "0");
-        const cats: Category[] = response.data.map((cat: any) => ({
-          id: cat.id,
-          name: cat.name,
-          color: randomColor,
-        }));
-        console.log(response.data);
+        const cats: Category[] = response.data.map((cat: any) => {
+          // Tạo màu random cho mỗi category
+          const randomColor =
+            "#" +
+            Math.floor(Math.random() * 0x1000000)
+              .toString(16)
+              .padStart(6, "0");
+
+          return {
+            id: cat.id,
+            name: cat.name,
+            color: randomColor,
+          };
+        });
+        console.log("Categories response data:", response.data);
         console.log(cats);
         setCategories(cats);
       } catch (error) {
@@ -129,7 +134,7 @@ const AdminMenuManagement: React.FC = () => {
       }
     };
     fetchCategories();
-  }, [pagecate]);
+  }, [pagecate, refreshCategories]);
   useEffect(() => {
     const fetchpage = async () => {
       try {
@@ -214,7 +219,7 @@ const AdminMenuManagement: React.FC = () => {
       alert("Thêm món mới thành công!");
       handleCloseModal();
       // Refresh danh sách menu
-      setPagemenu(1);
+      setRefreshMenu((prev) => prev + 1);
     } catch (error) {
       console.error("Error adding menu item:", error);
       alert("Có lỗi xảy ra khi thêm món!");
@@ -246,7 +251,6 @@ const AdminMenuManagement: React.FC = () => {
     setIsAddCategoryModalOpen(false);
     setNewCategory({
       name: "",
-      color: "green",
     });
   };
 
@@ -263,9 +267,10 @@ const AdminMenuManagement: React.FC = () => {
 
       await apiClient.post("/api/categories", newCategoryItem);
 
-      console.log("Added category:", newCategoryItem);
+      alert("Thêm danh mục mới thành công!");
       handleCloseCategoryModal();
-      setPagecate(1);
+      // Refresh danh sách categories
+      setRefreshCategories((prev) => prev + 1);
     } catch (error) {
       console.error("Error adding category:", error);
       alert("Có lỗi xảy ra khi thêm danh mục!");
@@ -380,13 +385,11 @@ const AdminMenuManagement: React.FC = () => {
                 style={{
                   backgroundColor:
                     selectedCategory === category.id
-                      ? `var(--${category.color})`
+                      ? category.color
                       : "transparent",
-                  borderColor: `var(--${category.color})`,
+                  borderColor: category.color,
                   color:
-                    selectedCategory === category.id
-                      ? "white"
-                      : `var(--${category.color})`,
+                    selectedCategory === category.id ? "white" : category.color,
                 }}
               >
                 {category.name}
@@ -616,45 +619,6 @@ const AdminMenuManagement: React.FC = () => {
                     handleCategoryInputChange("name", e.target.value)
                   }
                 />
-              </div>
-
-              <div className="form-group">
-                <label>Màu sắc</label>
-                <div className="color-picker">
-                  {["green", "blue", "purple", "red", "orange", "pink"].map(
-                    (color) => (
-                      <button
-                        key={color}
-                        className={`color-option ${
-                          newCategory.color === color ? "selected" : ""
-                        }`}
-                        style={{ backgroundColor: `var(--${color})` }}
-                        onClick={() =>
-                          handleCategoryInputChange("color", color)
-                        }
-                        title={color}
-                      >
-                        {newCategory.color === color && (
-                          <i className="fas fa-check"></i>
-                        )}
-                      </button>
-                    )
-                  )}
-                </div>
-              </div>
-
-              <div className="category-preview">
-                <label>Xem trước:</label>
-                <button
-                  className="filter-btn preview-btn"
-                  style={{
-                    backgroundColor: `var(--${newCategory.color})`,
-                    borderColor: `var(--${newCategory.color})`,
-                    color: "white",
-                  }}
-                >
-                  {newCategory.name || "Tên danh mục"}
-                </button>
               </div>
             </div>
 
